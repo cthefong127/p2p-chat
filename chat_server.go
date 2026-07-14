@@ -40,7 +40,7 @@ func main() {
 		// print out received data
 		fmt.Printf("Received: %s\n", string(buffer[:n]))
 
-		response := []byte("Packet received!")
+		response := []byte(fmt.Sprintf("Message received from: %v", clientAddr))
 
 		// RETURN TO SENDER
 		err = syscall.Sendto(fd, response, 0, clientAddr)
