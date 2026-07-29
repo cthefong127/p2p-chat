@@ -75,7 +75,13 @@ func main() {
 				fmt.Println(err)
 				continue
 			}
-			fmt.Printf("\nPeer says: %s (from %v)\n> ", string(recvBuf[:n]), from)
+			sa, ok := from.(*syscall.SockaddrInet4)
+			if !ok {
+				fmt.Println("not an IPv4")
+			}
+
+			incoming_ip := fmt.Sprintf("%d.%d.%d.%d:%d", sa.Addr[0], sa.Addr[1], sa.Addr[2], sa.Addr[3], sa.Port)
+			fmt.Printf("\nPeer says: %s (from %s)\n> ", string(recvBuf[:n]), incoming_ip)
 		}
 	}()
 
