@@ -43,8 +43,14 @@ func main() {
 			panic(err)
 		}
 
+		v4Addr, ok := from.(*syscall.SockaddrInet4)
+		if !ok {
+			fmt.Println("ignoring non-IPv4 sender")
+			continue
+		}
+
 		msg := string(buffer[:n]) // parse buffer as string
-		fmt.Printf("Received %q from %v\n", msg, from)
+		fmt.Printf("Received %q from %d.%d.%d.%d.:%d\n", msg, v4Addr.Addr[0], v4Addr.Addr[1], v4Addr.Addr[2], v4Addr.Addr[3], v4Addr.Port)
 
 		if strings.HasPrefix(msg, "PEER ") {
 			parsed, err := parsePeerAddr(strings.TrimPrefix(msg, "PEER "))
@@ -104,7 +110,7 @@ func main() {
 }
 
 // parsePeerAddr: turns an "ip:port" string (as sent by bootstrap server in
-// a "PEER <ip:<port>" message) into a *sysscall.SockaddrInet4 to pass to Sendto
+// a "PEER <ip:<port>" message) into a *syscall.SockaddrInet4 to pass to Sendto
 func parsePeerAddr(s string) (*syscall.SockaddrInet4, error) {
 	host, portStr, found := strings.Cut(s, ":")
 	if !found {
